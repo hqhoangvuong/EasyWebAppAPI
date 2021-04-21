@@ -1,0 +1,12 @@
+SELECT
+  CONSTRAINT_NAME, kcu.TABLE_NAME,kcu.COLUMN_NAME, colsrc.ORDINAL_POSITION, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME, colref.ORDINAL_POSITION
+FROM
+  INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
+      INNER JOIN information_schema.COLUMNS colref ON kcu.REFERENCED_TABLE_SCHEMA = colref.TABLE_SCHEMA
+                                                        AND kcu.REFERENCED_TABLE_NAME = colref.TABLE_NAME
+                                                        AND kcu.REFERENCED_COLUMN_NAME = colref.COLUMN_NAME
+     INNER JOIN information_schema.COLUMNS colsrc ON kcu.TABLE_SCHEMA = colsrc.TABLE_SCHEMA
+                                                        AND kcu.TABLE_NAME = colsrc.TABLE_NAME
+                                                        AND kcu.COLUMN_NAME = colsrc.COLUMN_NAME
+WHERE
+  REFERENCED_TABLE_SCHEMA = {0}

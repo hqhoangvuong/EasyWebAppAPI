@@ -26,8 +26,7 @@
             "AspNetUserRoles",
             "AspNetUserTokens",
             "SystemTableColumnConfigs",
-            "sysdiagrams",
-            "SystemLog"
+            "sysdiagrams"
         };
 
         public static readonly string[] SqlStringDataType =

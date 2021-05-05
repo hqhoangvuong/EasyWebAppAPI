@@ -33,12 +33,12 @@ namespace EasyWebApp.API.Controllers
             this._customerDbProccessSrv = customerDbProccessSrv;
         }
 
-        [HttpGet("GetDatabaseSchema")]
+        [HttpGet("PopulateDefaultSchemaConfig")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> GetDbSchema(string dbGuid)
+        public async Task<ActionResult<bool>> WirteSchemaConfig(string dbGuid)
         {
             var results = await _customerDbProccessSrv.WriteTableSchema(dbGuid, User.GetId());
             return Ok(results);

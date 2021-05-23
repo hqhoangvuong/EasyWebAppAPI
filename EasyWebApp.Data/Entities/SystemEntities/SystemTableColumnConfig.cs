@@ -21,6 +21,9 @@ namespace EasyWebApp.Data.Entities.SystemEntities
         [Column(TypeName = "varchar(200)")]
         public string ExplicitName { get; set; }
 
+        [Column(TypeName = "varchar(200)")]
+        public string PropertyName { get; set; }
+
         [Required]
         [Column(TypeName = "varchar(200)")]
         public string DataType { get; set; }

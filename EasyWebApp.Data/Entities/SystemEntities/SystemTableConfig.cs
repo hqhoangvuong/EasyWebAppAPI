@@ -16,6 +16,9 @@ namespace EasyWebApp.Data.Entities.SystemEntities
         [Required]
         public string ExplicitName { get; set; }
 
+        [Column(TypeName = "varchar(200)")]
+        public string ModelName { get; set; }
+
         [DefaultValue(false)]
         public bool IsHidden { get; set; }
 

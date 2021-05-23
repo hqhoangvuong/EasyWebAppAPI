@@ -119,6 +119,31 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                         columnConfigs.Add(config);
                     }
                     break;
+                case AppConst.DbSqlTypes.PostgreSQL:
+                    var primaryKeySchemaPostgres = GetPostgresPrimaryKey(dbConn, tableSchema);
+                    foreach (var info in columnSchema)
+                    {
+                        SystemTableColumnConfig config = new SystemTableColumnConfig()
+                        {
+                            TableId = tableConfigs.FirstOrDefault(t => t.Name == info.TableName).Id,
+                            Name = info.ColumnName,
+                            ExplicitName = info.ColumnName,
+                            DataType = info.DataType,
+                            ExplicitDataType = info.DataType,
+                            OrdinalPosition = info.OrdinalPosition,
+                            ColumnDefault = info.ColumnDefault,
+                            CharacterMaximumLength = info.CharacterMaximumLength,
+                            CharacterOctetLength = info.CharacterOctetLength,
+                            IsNullable = info.IsNullable,
+                            DisplayComponent = UIComponents.TextField,
+                            IsPrimaryKey = primaryKeySchemaPostgres.Any(t => t.ColumnName.Contains(info.ColumnName) && t.TableName == info.TableName),
+                            IsForeignKey = foreignKeySchema.Any(t => t.SourceTableName == info.TableName && t.SourceColumnName == info.ColumnName && t.SourceColumnOrdinalPos == info.OrdinalPosition),
+                            CreatedDate = DateTime.UtcNow,
+                            ModifiedDate = DateTime.UtcNow
+                        };
+                        columnConfigs.Add(config);
+                    }
+                    break;
             }
             await _context.SystemTableColumnConfigs.AddRangeAsync(columnConfigs);
             await _context.SaveChangesAsync();
@@ -159,16 +184,19 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
 
             switch (dbType)
             {
-                case Data.Consts.AppConst.DbSqlTypes.SQLServer:
-                    tableResults = tableResults.Where(t => t.TableType == "BASE TABLE" && !AppConst.SysTableNames.Contains(t.TableName)).OrderBy(t => t.TableName).ToList();
-                    break;
                 case AppConst.DbSqlTypes.MySQL:
                     tableResults = tableResults.Where(t =>
                                             t.TableType == "BASE TABLE" &&
                                             !AppConst.SysTableNames.Contains(t.TableName) &&
                                             !AppConst.MySqlSystemSchemaName.Contains(t.TableSchema)).OrderBy(t => t.TableName).ToList();
                     break;
-                    
+                default:
+                    tableResults = tableResults.Where(t => t.TableType == "BASE TABLE" && !AppConst.SysTableNames.
+                                                                                                    Contains(t.TableName)).
+                                                                                                    OrderBy(t => t.TableName).
+                                                                                                    ToList();
+                    break;
+
 
             }
 
@@ -190,17 +218,18 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
 
             switch (dbType)
             {
-                case Data.Consts.AppConst.DbSqlTypes.SQLServer:
-                    dbSchemaWithTableColumns.Columns.Add("COLUMN_KEY", typeof(String));
-                    columnResults = _mapper.Map<List<TableColumnSchemaQueryResult>>(dbSchemaWithTableColumns.Rows)
-                                           .Where(t => tables.Any(s => s.TableName == t.TableName))
-                                           .ToList();
-                    break;
                 case Data.Consts.AppConst.DbSqlTypes.MySQL:
                     columnResults = _mapper.Map<List<TableColumnSchemaQueryResult>>(dbSchemaWithTableColumns.Rows)
                                            .Where(t => tables.Any(s => s.TableName == t.TableName))
                                            .ToList();
                     break;
+                default:
+                    dbSchemaWithTableColumns.Columns.Add("COLUMN_KEY", typeof(String));
+                    columnResults = _mapper.Map<List<TableColumnSchemaQueryResult>>(dbSchemaWithTableColumns.Rows)
+                                           .Where(t => tables.Any(s => s.TableName == t.TableName))
+                                           .ToList();
+                    break;
+
             }
 
             return columnResults;
@@ -224,6 +253,9 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                     break;
                 case AppConst.DbSqlTypes.MySQL:
                     scriptFileName = "EasyWebApp.API.SqlScript.MySqlGetForeignKey.sql";
+                    break;
+                case AppConst.DbSqlTypes.PostgreSQL:
+                    scriptFileName = "EasyWebApp.API.SqlScript.PostgresGetForeignKey.sql";
                     break;
             }
 
@@ -303,6 +335,49 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
             return results.Where(t => tables.Any(s => s.TableName == t.TableName) && t.SchemaName == tables[0].TableSchema).ToList();
         }
 
+        public List<PrimaryKeyQueryResult> GetPostgresPrimaryKey(DbConnection dbConn,
+                                                                 List<TableSchemaQueryResult> tables)
+        {
+            List<PrimaryKeyQueryResult> results = new List<PrimaryKeyQueryResult>();
+            DataTable dbSchemaWithPrimaryKeys = new DataTable();
+            string commandText = "";
+            string scriptFileName = "EasyWebApp.API.SqlScript.PostgresGetPrimaryKey.sql";
+            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+
+            if (dbConn.State == ConnectionState.Closed)
+            {
+                dbConn.Open();
+            }
+
+            using (Stream s = thisAssembly.GetManifestResourceStream(scriptFileName))
+            {
+                using (StreamReader sr = new StreamReader(s))
+                {
+                    commandText = sr.ReadToEnd();
+                }
+            }
+
+
+            try
+            {
+                DbCommand command = dbConn.CreateCommand();
+                command.CommandText = commandText;
+                command.CommandType = CommandType.Text;
+
+                DbDataReader reader = command.ExecuteReader();
+                dbSchemaWithPrimaryKeys.Load(reader);
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception.Message: {0}", ex.Message);
+            }
+
+            results = _mapper.Map<List<PrimaryKeyQueryResult>>(dbSchemaWithPrimaryKeys.Rows);
+
+            return results.Where(t => tables.Any(s => s.TableName == t.TableName) && t.SchemaName == tables[0].TableSchema).ToList();
+        }
+
         public async Task CreateSystemTable(string dbGuid, string userGuid)
         {
             var dbConninfo = await _customerDbConnectionService.GetCustomerDbInfoByGuid(dbGuid, userGuid);
@@ -321,6 +396,9 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                     break;
                 case Data.Consts.AppConst.DbSqlTypes.SQLServer:
                     scriptFileName = "EasyWebApp.API.SqlScript.MsSqlSysTableCreate.sql";
+                    break;
+                case AppConst.DbSqlTypes.PostgreSQL:
+                    scriptFileName = "EasyWebApp.API.SqlScript.PostgresSystTableCreate.sql";
                     break;
             }
 

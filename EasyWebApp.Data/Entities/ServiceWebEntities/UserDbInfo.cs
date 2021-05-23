@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +23,30 @@ namespace EasyWebApp.Data.Entities.ServiceWebEntities
 
         public string BuildConnStr()
         {
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.DataSource = this.Server;
-            builder.UserID = this.Username;
-            builder.Password = this.Password;
-            builder.InitialCatalog = this.InitialCatalog;
-            builder.ConnectTimeout = 10;
+            if(DbType != null)
+            {
+                switch (DbType)
+                {
+                    case DbSqlTypes.PostgreSQL:
+                        NpgsqlConnectionStringBuilder postgresBuilder = new NpgsqlConnectionStringBuilder();
+                        postgresBuilder.Host = Server;
+                        postgresBuilder.Database = InitialCatalog;
+                        postgresBuilder.Username = Username;
+                        postgresBuilder.Password = Password;
+                        return postgresBuilder.ConnectionString;
+                    default:
+                        SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                        builder.DataSource = this.Server;
+                        builder.UserID = this.Username;
+                        builder.Password = this.Password;
+                        builder.InitialCatalog = this.InitialCatalog;
+                        builder.ConnectTimeout = 10;
+                        return builder.ConnectionString;
+                }
+            }
 
-            return builder.ConnectionString;
+            return "";
+
         }
     }
 }

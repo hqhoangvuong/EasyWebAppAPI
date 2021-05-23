@@ -33,6 +33,9 @@ namespace EasyWebApp.Data.DbContextProvider
                                             new MySqlServerVersion(new Version(8, 0, 21)),
                                             mySqlOptions => mySqlOptions.CharSetBehavior(CharSetBehavior.NeverAppend));
                     break;
+                case AppConst.DbSqlTypes.PostgreSQL:
+                    optionsBuilder.UseNpgsql(connStr);
+                    break;
             }
             
             return new CustomerDbContext(optionsBuilder.Options);

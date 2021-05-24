@@ -132,12 +132,12 @@ create table SystemTableConfigs
         primary key,
     Name         varchar(200) not null,
     ExplicitName varchar(200) not null,
-    ModelName    varchar(200) null,
     IsHidden     tinyint(1)   not null,
     ActionGroup  varchar(10)  not null,
     CreatedDate  datetime(6)  not null,
     ModifiedDate datetime(6)  not null,
     IsDeleted    tinyint(1)   not null,
+    ModelName    varchar(200) null,
     constraint IX_SystemTableConfigs_Name
         unique (Name)
 );
@@ -149,7 +149,6 @@ create table SystemTableColumnConfigs
     TableId                int          not null,
     Name                   varchar(200) not null,
     ExplicitName           varchar(200) null,
-    PropertyName           varchar(200) null,
     DataType               varchar(200) not null,
     ExplicitDataType       varchar(200) null,
     OrdinalPosition        int          not null,
@@ -164,6 +163,7 @@ create table SystemTableColumnConfigs
     CreatedDate            datetime(6)  not null,
     ModifiedDate           datetime(6)  not null,
     IsDeleted              tinyint(1)   not null,
+    PropertyName           varchar(200) null,
     constraint IX_SystemTableColumnConfigs_TableId_Name
         unique (TableId, Name),
     constraint FK_SystemTableColumnConfigs_SystemTableConfigs_TableId

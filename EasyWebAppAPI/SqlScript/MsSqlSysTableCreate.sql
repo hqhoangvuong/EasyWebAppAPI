@@ -146,12 +146,12 @@ create table SystemTableConfigs
             primary key,
     Name         varchar(200) not null,
     ExplicitName varchar(200) not null,
-    ModelName    varchar(200),
     IsHidden     bit          not null,
     ActionGroup  varchar(10)  not null,
     CreatedDate  datetime2    not null,
     ModifiedDate datetime2    not null,
-    IsDeleted    bit          not null
+    IsDeleted    bit          not null,
+    ModelName    varchar(200)
 )
 
 create table SystemTableColumnConfigs
@@ -165,7 +165,6 @@ create table SystemTableColumnConfigs
             on delete cascade,
     Name                   varchar(200) not null,
     ExplicitName           varchar(200),
-    PropertyName           varchar(200),
     DataType               varchar(200) not null,
     ExplicitDataType       varchar(200),
     OrdinalPosition        int          not null,
@@ -179,7 +178,8 @@ create table SystemTableColumnConfigs
     IsHidden               bit          not null,
     CreatedDate            datetime2    not null,
     ModifiedDate           datetime2    not null,
-    IsDeleted              bit          not null
+    IsDeleted              bit          not null,
+    PropertyName           varchar(200)
 )
 
 create unique index IX_SystemTableColumnConfigs_TableId_Name

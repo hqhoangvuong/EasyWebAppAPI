@@ -207,6 +207,7 @@ CREATE TABLE public."SystemTableColumnConfigs"
     "ModifiedDate" timestamp without time zone NOT NULL,
     "IsDeleted" boolean NOT NULL,
     "PropertyName" character varying(200) COLLATE pg_catalog."default",
+    "IsAutoIncrement" boolean,
     CONSTRAINT "PK_SystemTableColumnConfigs" PRIMARY KEY ("Id"),
     CONSTRAINT "FK_SystemTableColumnConfigs_SystemTableConfigs_TableId" FOREIGN KEY ("TableId")
         REFERENCES public."SystemTableConfigs" ("Id") MATCH SIMPLE

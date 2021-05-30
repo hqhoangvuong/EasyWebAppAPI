@@ -179,7 +179,8 @@ create table SystemTableColumnConfigs
     CreatedDate            datetime2    not null,
     ModifiedDate           datetime2    not null,
     IsDeleted              bit          not null,
-    PropertyName           varchar(200)
+    PropertyName           varchar(200),
+    IsAutoIncrement        bit
 )
 
 create unique index IX_SystemTableColumnConfigs_TableId_Name

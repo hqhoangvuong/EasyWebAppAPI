@@ -164,6 +164,7 @@ create table SystemTableColumnConfigs
     ModifiedDate           datetime(6)  not null,
     IsDeleted              tinyint(1)   not null,
     PropertyName           varchar(200) null,
+    IsAutoIncrement        tinyint(1),
     constraint IX_SystemTableColumnConfigs_TableId_Name
         unique (TableId, Name),
     constraint FK_SystemTableColumnConfigs_SystemTableConfigs_TableId

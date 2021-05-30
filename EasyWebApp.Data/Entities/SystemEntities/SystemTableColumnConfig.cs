@@ -56,5 +56,8 @@ namespace EasyWebApp.Data.Entities.SystemEntities
         [Required]
         [DefaultValue(false)]
         public bool IsHidden { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsAutoIncrement { get; set; }
     }
 }

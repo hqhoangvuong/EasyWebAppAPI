@@ -89,6 +89,7 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                             DisplayComponent = UIComponents.TextField,
                             IsPrimaryKey = primaryKeySchema.Any(t => t.ColumnName.Contains(info.ColumnName) && t.TableName == info.TableName),
                             IsForeignKey = foreignKeySchema.Any(t => t.SourceTableName == info.TableName && t.SourceColumnName == info.ColumnName && t.SourceColumnOrdinalPos == info.OrdinalPosition),
+                            IsAutoIncrement = info.Extra == "auto_increment" ? true : false,
                             CreatedDate = DateTime.UtcNow,
                             ModifiedDate = DateTime.UtcNow
                         };
@@ -113,6 +114,7 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                             DisplayComponent = UIComponents.TextField,
                             IsPrimaryKey = info.ColumnKey == "PRI",
                             IsForeignKey = foreignKeySchema.Any(t => t.SourceTableName == info.TableName && t.SourceColumnName == info.ColumnName && t.SourceColumnOrdinalPos == info.OrdinalPosition),
+                            IsAutoIncrement = info.Extra == "auto_increment" ? true : false,
                             CreatedDate = DateTime.UtcNow,
                             ModifiedDate = DateTime.UtcNow
                         };
@@ -138,6 +140,7 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                             DisplayComponent = UIComponents.TextField,
                             IsPrimaryKey = primaryKeySchemaPostgres.Any(t => t.ColumnName.Contains(info.ColumnName) && t.TableName == info.TableName),
                             IsForeignKey = foreignKeySchema.Any(t => t.SourceTableName == info.TableName && t.SourceColumnName == info.ColumnName && t.SourceColumnOrdinalPos == info.OrdinalPosition),
+                            IsAutoIncrement = info.Extra == "auto_increment" ? true : false,
                             CreatedDate = DateTime.UtcNow,
                             ModifiedDate = DateTime.UtcNow
                         };
@@ -224,10 +227,67 @@ namespace EasyWebApp.API.Services.CustomerDbProccessSrv
                                            .ToList();
                     break;
                 default:
+                    string commandText = "";
+                    string scriptFileName = "";
+                    DataTable IdentityColumns = new DataTable();
+                    Assembly thisAssembly = Assembly.GetExecutingAssembly();
+
+                    if(dbType == AppConst.DbSqlTypes.SQLServer)
+                    {
+                        scriptFileName = "EasyWebApp.API.SqlScript.MsSqlGetIdentity.sql";
+                    }
+                    else
+                    {
+                        scriptFileName = "EasyWebApp.API.SqlScript.PostgresGetIdentity.sql";
+                    }
+
+                    using (Stream s = thisAssembly.GetManifestResourceStream(scriptFileName))
+                    {
+                        using (StreamReader sr = new StreamReader(s))
+                        {
+                            commandText = sr.ReadToEnd();
+                        }
+                    }
+
+                    try
+                    {
+                        DbCommand command = dbConn.CreateCommand();
+                        command.CommandText = commandText;
+                        command.CommandType = CommandType.Text;
+
+                        if (dbConn.State == ConnectionState.Closed)
+                        {
+                            dbConn.Open();
+                        }
+
+                        DbDataReader reader = command.ExecuteReader();
+                        IdentityColumns.Load(reader);
+                    }
+
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception.Message: {0}", ex.Message);
+                    }
+
                     dbSchemaWithTableColumns.Columns.Add("COLUMN_KEY", typeof(String));
+                    dbSchemaWithTableColumns.Columns.Add("EXTRA", typeof(String));
+
                     columnResults = _mapper.Map<List<TableColumnSchemaQueryResult>>(dbSchemaWithTableColumns.Rows)
-                                           .Where(t => tables.Any(s => s.TableName == t.TableName))
-                                           .ToList();
+                       .Where(t => tables.Any(s => s.TableName == t.TableName))
+                       .ToList();
+
+                    if (IdentityColumns.Rows.Count != 0)
+                    {
+                        foreach (DataRow row in IdentityColumns.Rows)
+                        {
+                            var selectedColumn = columnResults.FirstOrDefault(t => t.TableName == row.Field<string>("TABLENAME") &&
+                                                                                    t.ColumnName == row.Field<string>("COLUMNNAME"));
+                            if(selectedColumn != null)
+                            {
+                                selectedColumn.Extra = "auto_increment";
+                            }
+                        }
+                    }
                     break;
 
             }

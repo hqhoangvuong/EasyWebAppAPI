@@ -19,5 +19,6 @@ namespace EasyWebApp.Data.Entities.QueryResultEntities
         public string DataType { get; set; }
         public int CharacterMaximumLength { get; set; }
         public int CharacterOctetLength { get; set; }
+        public string Extra { get; set; }
     }
 }

@@ -34,6 +34,7 @@ namespace EasyWebApp.API.Mappers
             mappingExpression1.ForMember(d => d.IsNullable, o => o.MapFrom(s => s["IS_NULLABLE"]));
             mappingExpression1.ForMember(d => d.DataType, o => o.MapFrom(s => s["DATA_TYPE"]));
             mappingExpression1.ForMember(d => d.ColumnKey, o => o.MapFrom(s => s["COLUMN_KEY"]));
+            mappingExpression1.ForMember(d => d.Extra, o => o.MapFrom(s => s["EXTRA"]));
             // mappingExpression1.ForMember(d => d.CharacterMaximumLength, o => o.MapFrom(s => s["CHARACTER_MAXIMUM_LENGTH"]));
 
 

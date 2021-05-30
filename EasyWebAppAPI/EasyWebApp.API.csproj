@@ -11,12 +11,14 @@
   <ItemGroup>
     <None Remove="SqlScripts\MySqlSysTableCreate.sql" />
     <None Remove="SqlScript\MsSqlGetForeignKey.sql" />
+    <None Remove="SqlScript\MsSqlGetIdentity.sql" />
     <None Remove="SqlScript\MsSqlGetPrimaryKey.sql" />
     <None Remove="SqlScript\MsSqlSysTableCreate.sql" />
     <None Remove="SqlScript\MySqlGetForeignKey.sql" />
     <None Remove="SqlScript\MySqlGetForeignKeysql" />
     <None Remove="SqlScript\MySqlSysTableCreate.sql" />
     <None Remove="SqlScript\PostgresGetForeignKey.sql" />
+    <None Remove="SqlScript\PostgresGetIdentity.sql" />
     <None Remove="SqlScript\PostgresGetPrimaryKey.sql" />
     <None Remove="SqlScript\PostgresSystTableCreate.sql" />
   </ItemGroup>
@@ -27,6 +29,9 @@
     </Resource>
     <EmbeddedResource Include="SqlScript\MsSqlGetForeignKey.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlScript\MsSqlGetIdentity.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlScript\MsSqlGetPrimaryKey.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -42,6 +47,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SqlScript\PostgresGetForeignKey.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlScript\PostgresGetIdentity.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlScript\PostgresGetPrimaryKey.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

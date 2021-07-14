@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using EasyWebApp.Data.Entities.AuthenticationEnties;
 using EasyWebApp.Data.Entities.QueryResultEntities;
+using EasyWebApp.Data.Entities.ServiceWebEntities;
 using EasyWebApp.Data.Entities.SystemEntities;
 using EasyWebApp.Data.ViewModels;
 using System;
@@ -55,6 +57,16 @@ namespace EasyWebApp.API.Mappers
             mappingExpression3.ForMember(d => d.ColumnName, o => o.MapFrom(s => s["ColumnName"]));
             mappingExpression3.ForMember(d => d.TableName, o => o.MapFrom(s => s["TableName"]));
 
+            IMappingExpression<UserDbInfo, DbInfoViewModel> mappingExpression4;
+            mappingExpression4 = CreateMap<UserDbInfo, DbInfoViewModel>();
+            mappingExpression4.ForMember(d => d.DbType, o => o.MapFrom(s => s.DbType == Data.Consts.AppConst.DbSqlTypes.SQLServer ? "Microsoft SQL" :
+                                                                                        s.DbType == Data.Consts.AppConst.DbSqlTypes.MySQL ? "MySQL" : "PostgresSQL"));
+            mappingExpression4.ForMember(d => d.ApiDownloadLink, o => o.MapFrom(s => s.DownloadLinkApi));
+            mappingExpression4.ForMember(d => d.ClientAppDownloadLink, o => o.MapFrom(s => s.DownloadLinkClientApp));
+            mappingExpression4.ForMember(d => d.DatabaseName, o => o.MapFrom(s => s.InitialCatalog));
+
+            IMappingExpression<ApplicationUser, UserInfoViewModel> mappingExpression5;
+            mappingExpression5 = CreateMap<ApplicationUser, UserInfoViewModel>();
         }
     }
 }

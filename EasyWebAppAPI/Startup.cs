@@ -1,6 +1,7 @@
 using EasyWebApp.API.Services.AuthSrv;
 using EasyWebApp.API.Services.CustomerDbConnStrManagerSrv;
 using EasyWebApp.API.Services.CustomerDbProccessSrv;
+using EasyWebApp.API.Services.CustomerDbStatisticsSrv;
 using EasyWebApp.API.Services.UserSrv;
 using EasyWebApp.API.Settings;
 using EasyWebApp.Data.DbContext;
@@ -130,6 +131,7 @@ namespace EasyWebAppAPI
             services.AddScoped<ICustomerDbConnStrManagerSrv, CustomerDbConnStrManagerSrv>();
             services.AddScoped<IDbContextProvider, DbContextProvider>();
             services.AddScoped<ICustomerDbProccessSrv, CustomerDbProccessSrv>();
+            services.AddScoped<ICustomerDbStatisticsSrv, CustomerDbStatisticsSrv>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

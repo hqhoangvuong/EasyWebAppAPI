@@ -1,5 +1,6 @@
 ﻿using EasyWebApp.Data.Entities.AuthenticationEnties;
 using EasyWebApp.Data.Exception;
+using EasyWebApp.Data.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
@@ -18,6 +19,16 @@ namespace EasyWebApp.API.Services.UserSrv
         public Task<ApplicationUser> CreateAsync(ApplicationUser entity, string password = null)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ApplicationUser> GetUserInfo(string userId)
+        {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+            var loggedUser = await _userManager.FindByIdAsync(userId);
+            if (loggedUser == null)
+                throw new ModelStateException(nameof(userId), "Invalid user Id");
+            return loggedUser;
         }
 
         public Task UpdatePasswordAsync(ApplicationUser entity, string password)

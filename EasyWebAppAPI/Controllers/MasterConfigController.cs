@@ -1,4 +1,6 @@
-﻿using EasyWebApp.API.Commons;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using EasyWebApp.API.Commons;
 using EasyWebApp.API.Extensions;
 using EasyWebApp.API.Services.CustomerDbConnStrManagerSrv;
 using EasyWebApp.Data.DbContext;
@@ -9,9 +11,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using EasyWebApp.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
+using System.IO;
 
 namespace EasyWebApp.API.Controllers
 {
@@ -73,24 +78,63 @@ namespace EasyWebApp.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SystemMasterConfig>> CreateMasterConfig(string dbGuid, [FromBody] SystemMasterConfig newMasterConfig)
+        public async Task<ActionResult<SystemMasterConfig>> CreateMasterConfig(string dbGuid, [FromBody] IEnumerable<SystemMasterConfig> newMasterConfigs)
         {
             var context = await GetDbContext(dbGuid);
-            var exsited = await context.SystemMasterConfigs.FirstOrDefaultAsync(t => t.ConfigName == newMasterConfig.ConfigName);
-
-            if(exsited != null)
+            foreach (var item in newMasterConfigs)
             {
-                return CheckData<SystemMasterConfig>.ItemStringExists("ConfigName", newMasterConfig.ConfigName);
+                item.CreatedDate = DateTime.UtcNow;
+                item.ModifiedDate = DateTime.UtcNow;
+                item.IsActive = true;
+                await context.SystemMasterConfigs.AddAsync(item);
             }
-
-            newMasterConfig.CreatedDate = DateTime.UtcNow;
-            newMasterConfig.ModifiedDate = DateTime.UtcNow;
-            newMasterConfig.IsActive = true;
-
-            await context.SystemMasterConfigs.AddAsync(newMasterConfig);
+            
             await context.SaveChangesAsync();
 
-            return Created("", newMasterConfig);
+            return Created("", newMasterConfigs);
+        }
+
+        [HttpPost("UploadImage")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task UploadImage(string dbGuid, [FromBody] Data.Entities.Image image)
+        {
+            Account account = new Account("dsnt8hyn6",
+                                          "121517243286974",
+                                          "q-rZlX2PIYFPuLOmPlrZso1UYx4");
+
+            var context = await GetDbContext(dbGuid);
+            Cloudinary cloudinary = new Cloudinary(account);
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(image.Img)
+            };
+            var uploadResult = cloudinary.Upload(uploadParams);
+            var imageUrl = Convert.ToString(uploadResult.Url);
+
+            var result = await context.SystemMasterConfigs.FirstOrDefaultAsync(t => t.ConfigName == "BussinessLogo");
+            if(result != null)
+            {
+                result.ConfigValue = imageUrl;
+                result.ModifiedDate = DateTime.UtcNow;
+            }
+            else
+            {
+                var newConfig = new SystemMasterConfig()
+                {
+                    ConfigName = "BussinessLogo",
+                    ConfigValue = imageUrl,
+                    CreatedDate = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                await context.SystemMasterConfigs.AddAsync(newConfig);
+            }
+
+            await context.SaveChangesAsync();
         }
 
         [HttpPut("UpdateMasterConfig")]

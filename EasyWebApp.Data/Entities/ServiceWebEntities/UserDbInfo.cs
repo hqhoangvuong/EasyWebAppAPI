@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using MySqlConnector;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,11 @@ namespace EasyWebApp.Data.Entities.ServiceWebEntities
         public string InitialCatalog { get; set; }
         public string FrontEndId { get; set; }
         public string BackEndId { get; set; }
+        public string DownloadLinkApi { get; set; }
+        public string DownloadLinkClientApp { get; set; }
+        public string Status { get; set; }
+        public string BussinessName { get; set; }
+        public int ServerPort { get; set; }
 
         public string BuildConnStr()
         {
@@ -30,13 +36,22 @@ namespace EasyWebApp.Data.Entities.ServiceWebEntities
                     case DbSqlTypes.PostgreSQL:
                         NpgsqlConnectionStringBuilder postgresBuilder = new NpgsqlConnectionStringBuilder();
                         postgresBuilder.Host = Server;
+                        postgresBuilder.Port = ServerPort;
                         postgresBuilder.Database = InitialCatalog;
                         postgresBuilder.Username = Username;
                         postgresBuilder.Password = Password;
                         return postgresBuilder.ConnectionString;
+                    case DbSqlTypes.MySQL:
+                        MySqlConnectionStringBuilder mySqlBuilder = new MySqlConnectionStringBuilder();
+                        mySqlBuilder.Server = Server;
+                        mySqlBuilder.Port = (uint)ServerPort;
+                        mySqlBuilder.UserID = Username;
+                        mySqlBuilder.Password = Password;
+                        mySqlBuilder.Database = InitialCatalog;
+                        return mySqlBuilder.ConnectionString;
                     default:
                         SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-                        builder.DataSource = this.Server;
+                        builder.DataSource = string.Format("{0},{1}", this.Server, ServerPort);
                         builder.UserID = this.Username;
                         builder.Password = this.Password;
                         builder.InitialCatalog = this.InitialCatalog;
@@ -46,7 +61,6 @@ namespace EasyWebApp.Data.Entities.ServiceWebEntities
             }
 
             return "";
-
         }
     }
 }

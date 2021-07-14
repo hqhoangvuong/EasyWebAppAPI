@@ -17,9 +17,26 @@ namespace EasyWebApp.API.Services.CustomerDbConnStrManagerSrv
             this._context = easyWebDbContext;
         }
 
+        public async Task<IEnumerable<UserDbInfo>> GetAllDbOfUser(string userId)
+        {
+            return await _context.UserDatabaseInfos.Where(t => t.UserId == userId).ToListAsync();
+        }
+
         public async Task<UserDbInfo> GetCustomerDbInfoByGuid(string dbInfoGuid, string userId)
         {
             return await _context.UserDatabaseInfos.FirstOrDefaultAsync(t => t.UserId == userId && t.Guid == dbInfoGuid);
+        }
+
+        public async Task<UserDbInfo> PopulateBussinessName(string dbInfoGuid, string userId, string bussinessName)
+        {
+            var result = await _context.UserDatabaseInfos.FirstOrDefaultAsync(t => t.UserId == userId && t.Guid == dbInfoGuid);
+            if(result != null)
+            {
+                result.BussinessName = bussinessName;
+                await _context.SaveChangesAsync();
+            }
+
+            return result;
         }
 
         public async Task<UserDbInfo> RegisterDb(UserDbInfo newDbInfo, string userGuid)

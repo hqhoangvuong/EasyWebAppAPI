@@ -10,5 +10,7 @@ namespace EasyWebApp.API.Services.CustomerDbConnStrManagerSrv
     {
         Task<UserDbInfo> GetCustomerDbInfoByGuid(string dbInfoGuid, string userId);
         Task<UserDbInfo> RegisterDb(UserDbInfo newDbInfo, string userGuid);
+        Task<UserDbInfo> PopulateBussinessName(string dbInfoGuid, string userId, string bussinessName);
+        Task<IEnumerable<UserDbInfo>> GetAllDbOfUser(string userId);
     }
 }

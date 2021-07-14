@@ -32,5 +32,16 @@ namespace EasyWebApp.API.Controllers
         {
             return Ok(await _customerDbConnectionService.RegisterDb(newDb, User.GetId()));
         }
+
+        [HttpPut("RegisterBussinessName")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDbInfo>> RegisterBussinessName(string dbGuid, string bussinessName)
+        {
+            return Ok(await _customerDbConnectionService.PopulateBussinessName(dbGuid, User.GetId(), bussinessName));
+        }
+
     }
 }

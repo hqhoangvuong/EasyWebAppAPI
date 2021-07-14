@@ -4,14 +4,16 @@ using EasyWebApp.Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EasyWebApp.Data.Migrations.EasyWebDb
 {
     [DbContext(typeof(EasyWebDbContext))]
-    partial class EasyWebDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210606140203_addserverport")]
+    partial class addserverport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

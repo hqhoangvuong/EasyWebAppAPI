@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EasyWebApp.Data.Migrations.EasyWebDb
 {
-    public partial class easyappmigartion : Migration
+    public partial class init_06_06 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -66,6 +66,10 @@ namespace EasyWebApp.Data.Migrations.EasyWebDb
                     InitialCatalog = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FrontEndId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BackEndId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DownloadLinkApi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DownloadLinkClientApp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BussinessName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)

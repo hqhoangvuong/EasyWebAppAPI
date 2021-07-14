@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyWebApp.Data.Migrations.EasyWebDb
 {
     [DbContext(typeof(EasyWebDbContext))]
-    [Migration("20210419144523_easy-app-migartion")]
-    partial class easyappmigartion
+    [Migration("20210606082222_init_06_06")]
+    partial class init_06_06
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -111,11 +111,20 @@ namespace EasyWebApp.Data.Migrations.EasyWebDb
                     b.Property<string>("BackEndId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BussinessName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DbType")
                         .HasColumnType("int");
+
+                    b.Property<string>("DownloadLinkApi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DownloadLinkClientApp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FrontEndId")
                         .HasColumnType("nvarchar(max)");
@@ -136,6 +145,9 @@ namespace EasyWebApp.Data.Migrations.EasyWebDb
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
